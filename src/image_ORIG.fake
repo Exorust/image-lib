@@ -1,0 +1,108 @@
+#include "image_library/image.hpp"
+#include <fstream>
+#include <stdexcept>
+#include <vector>
+#include <cstring>
+#include <memory>
+#include <iostream>
+
+namespace image_library
+{
+    // Constructor for creating a blank image
+    Image::Image(int width, int height)
+        : width(width), height(height), pixelData(width * height * 3, 255), isDataLoaded(true) {}
+
+    // Constructor for loading from a file
+    Image::Image(const std::string &filepath)
+        : width(0), height(0), isDataLoaded(false), sourceFile(filepath)
+    {
+        // Lazy-load pixel data when accessed
+        std::ifstream file(filepath, std::ios::binary);
+        if (!file)
+        {
+            throw std::runtime_error("Failed to open file: " + filepath);
+        }
+
+        // Read metadata (dummy example)
+        file.read(reinterpret_cast<char *>(&width), sizeof(width));
+        file.read(reinterpret_cast<char *>(&height), sizeof(height));
+        file.close();
+    }
+
+    // Save the image to a file
+    void Image::save(const std::string &filepath) const
+    {
+        if (!isDataLoaded)
+        {
+            throw std::runtime_error("Image data not loaded, cannot save.");
+        }
+        savePixelData(filepath);
+    }
+
+    // Accessors for dimensions
+    int Image::getWidth() const { return width; }
+    int Image::getHeight() const { return height; }
+
+    // Accessor for pixel data
+    std::vector<uint8_t> &Image::getPixelData()
+    {
+        if (!isDataLoaded)
+        {
+            loadPixelData();
+        }
+        return pixelData;
+    }
+
+    const std::vector<uint8_t> &Image::getPixelData() const
+    {
+        if (!isDataLoaded)
+        {
+            const_cast<Image *>(this)->loadPixelData();
+        }
+        return pixelData;
+    }
+
+    // Lazy loading implementation
+    void Image::loadPixelData()
+    {
+        if (sourceFile.empty())
+        {
+            throw std::runtime_error("No source file to load from.");
+        }
+
+        std::ifstream file(sourceFile, std::ios::binary);
+        if (!file)
+        {
+            throw std::runtime_error("Failed to open file: " + sourceFile);
+        }
+
+        // Skip metadata (dummy example)
+        file.seekg(2 * sizeof(int));
+
+        // Read pixel data
+        pixelData.resize(width * height * 3);
+        file.read(reinterpret_cast<char *>(pixelData.data()), pixelData.size());
+        isDataLoaded = true;
+        file.close();
+    }
+
+    bool Image::savePixelData(const std::string &filepath) const
+    {
+        std::ofstream file(filepath, std::ios::binary);
+        if (!file)
+        {
+            throw std::runtime_error("Failed to open file for writing: " + filepath);
+            return false;
+        }
+
+        // Write metadata (dummy example)
+        file.write(reinterpret_cast<const char *>(&width), sizeof(width));
+        file.write(reinterpret_cast<const char *>(&height), sizeof(height));
+
+        // Write pixel data
+        file.write(reinterpret_cast<const char *>(pixelData.data()), pixelData.size());
+        file.close();
+        return true;
+    }
+
+} // namespace image_library

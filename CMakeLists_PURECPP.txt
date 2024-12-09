@@ -1,0 +1,30 @@
+cmake_minimum_required(VERSION 3.15)
+project(ImageLibrary VERSION 1.0.0 LANGUAGES CXX)
+
+# Set build type to Debug
+set(CMAKE_BUILD_TYPE Debug)
+
+
+# Library setup
+add_library(image_library STATIC
+    src/image.cpp
+    src/processing.cpp
+)
+
+# Include directories for the library
+target_include_directories(image_library PUBLIC 
+    ${CMAKE_SOURCE_DIR}/include  # Link your project's include directory
+)
+
+# Link libraries to image_library
+target_link_libraries(image_library)
+
+# Example setup (compile and link examples)
+file(GLOB EXAMPLE_SOURCES examples/*.cpp)
+foreach(example_source ${EXAMPLE_SOURCES})
+    get_filename_component(example_name ${example_source} NAME_WE)
+    add_executable(${example_name} ${example_source})
+    
+    # Link the image_library to each example
+    target_link_libraries(${example_name} PRIVATE image_library)
+endforeach()

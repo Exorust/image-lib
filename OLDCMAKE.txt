@@ -1,0 +1,46 @@
+cmake_minimum_required(VERSION 3.15)
+project(ImageLibrary VERSION 1.0.0 LANGUAGES CXX)
+
+# Find the JPEG library
+set(CMAKE_TOOLCHAIN_FILE "C:/Users/chand/mybin/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "vcpkg toolchain file")
+# set(CMAKE_TOOLCHAIN_FILE "C:/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "vcpkg toolchain file")
+
+# set(JPEG_LIBRARY_DIR "C:/Users/chand/mybin/vcpkg/installed/x64-windows/include")
+# set(JPEG_LIBRARY "C:/Users/chand/mybin/vcpkg/installed/x64-windows/lib/libjpeg.lib")
+
+# find_package(JPEG REQUIRED)
+find_package(OpenJPEG CONFIG REQUIRED)
+target_link_libraries(main PRIVATE openjp2)
+# find_package(libjpeg-turbo CONFIG REQUIRED)
+# target_link_libraries(main PRIVATE $<IF:$<TARGET_EXISTS:libjpeg-turbo::turbojpeg>,libjpeg-turbo::turbojpeg,libjpeg-turbo::turbojpeg-static>)
+
+# target_include_directories(main PRIVATE JPEG::JPEG)
+# message(STATUS "JPEG_LIBRARIES: ${JPEG_LIBRARIES}")
+
+# Library setup
+add_library(image_library STATIC
+    src/image.cpp
+    src/processing.cpp
+)
+
+# Include directories
+target_include_directories(image_library PUBLIC include)
+
+# Link JPEG library to image_library
+target_link_libraries(image_library PRIVATE JPEG::JPEG)
+
+# # Test setup
+# option(BUILD_TESTING "Build tests" OFF)
+
+# if(BUILD_TESTING)
+#     enable_testing()
+#     add_subdirectory(tests)
+# endif()
+
+# Example setup
+file(GLOB EXAMPLE_SOURCES examples/*.cpp)
+foreach(example_source ${EXAMPLE_SOURCES})
+    get_filename_component(example_name ${example_source} NAME_WE)
+    add_executable(${example_name} ${example_source})
+    target_link_libraries(${example_name} PRIVATE image_library)
+endforeach()

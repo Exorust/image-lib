@@ -1,0 +1,63 @@
+# General
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.exe
+*.out
+*.a
+*.lib
+
+# CUDA-specific
+*.ptx
+*.cubin
+*.fatbin
+
+# Build files and directories
+/build/
+/dist/
+/Debug/
+/Release/
+/CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+*.cmake
+*.ninja
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.log
+tests/CMakeFiles/
+x64/
+
+# IDE-specific files
+# Visual Studio
+*.sln
+*.vcxproj*
+ipch/
+*.aps
+*.ncb
+*.user
+*.unsuccessfulbuild
+*.rsrc
+*.opendb
+*.tlog
+.vscode/
+_deps/
+lib/
+
+
+# Other backups and temp files
+*.bak
+*.swp
+*.tmp
+*.temp
+*.log
+*.stackdump
+
+# Python bindings or auxiliary scripts
+__pycache__/
+*.pyc
+*.pyo
